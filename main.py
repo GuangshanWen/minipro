@@ -1,11 +1,12 @@
 import json
-from flask import Flask
-from flask import request
+#from flask import Flask
+#from flask import request
+import flask
 from wutil import *
 from DB import *
 from API import *
 
-app = Flask(__name__)
+app = flask.Flask(__name__)
 
 addr = "172.16.0.17"
 myport = 8888
@@ -17,12 +18,16 @@ def upload_user_info():
 # 3. insert user information into redis 
 # 4. mkdir ID
 # 5. return user ID to client
-	user_info = request.get_data()
-	json_form = json.loads(user_info)#1
+	user_info = flask.request.form
+	
 
-	UserID = Generate_UserID(json_form)#2
+	UserID = Generate_UserID(user_info)#2
+	
+	Create_User_DB(UserID)
+	Create_Image_Tags_DB(UserID)
+	Create_Tag_Images(UserID)	
         
-	ret = Insert_Into_User_DB(UserID,json_form)#3
+	ret = Insert_Into_User_DB(UserID,user_info)#3
 	if ret !=0 :
 		pass
 
@@ -33,18 +38,23 @@ def upload_user_info():
 	#print json_form["nickname"]
 	return UserID#5
 
-@app.route('/upload_image',methods=['POST'])
+@app.route('/upload_image',methods=['GET','POST'])
 def upload_image():
 # 1. receive image
 # 2. generate ImageID
 # 3. call back-API to get image tags  
 # 4. insert new image-tags to redis
 	
-#	usr_info = request.form['user']
+	usrID = flask.request.form['user']
 
-	image = request.files['image']#1
+	ret = Check_User(UserID)
+	if ret == 1:
+		return 'unsafe user'	
+
+	image = flask.request.files.get('image')#1
+ #	print image
 	
-	image.save('hello.PNG')
+#	image.save('hello.PNG')
  #	print usr_info 
 	#print image
 
