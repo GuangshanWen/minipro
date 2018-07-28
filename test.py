@@ -1,10 +1,12 @@
+#-*-coding=utf-8 -*-
 import requests
 import json
 import urllib
 import urllib2
+import sys
 
 url = 'http://134.175.178.44:88889'
-
+#sys.setdefaultencoding('utf-8')
 def test_upload_user_info():
 	path = '/upload_user_info'
 	myurl = url + path;
@@ -24,7 +26,7 @@ def test_upload_image():
 	myurl = url + path
 
 	data = {'user':'wen'}
-	image = {'image':open('./wed.JPG')}
+	image = {'image':open('./test2.jpg')}
 	
 	r = requests.post(url = myurl,data = data, files = image)
 	print r.content 
