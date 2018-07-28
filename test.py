@@ -24,10 +24,10 @@ def test_upload_image():
 	myurl = url + path
 
 	data = {'user':'wen'}
-	image = {'image':open('./hello.PNG')}
+	image = {'image':open('./wed.JPG')}
 	
 	r = requests.post(url = myurl,data = data, files = image)
-	print r
+	print r.content 
 
 def test_append_tags():
 	path = '/append_tags'

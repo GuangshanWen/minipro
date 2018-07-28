@@ -56,7 +56,7 @@ def upload_image():
 		return 'unsafe user'	
 
 	image = flask.request.files.get('image')#1
-	print image.filename
+#	print image.filename
  #	print image	
 #	image.save('hello.PNG')
  #	print usr_info 
@@ -65,12 +65,16 @@ def upload_image():
  	ImageID = Generate_ImageID()#2
 	Save_To_ImageDB(UserID,ImageID,image)
 	print ImageID
-	Tags = Get_Image_Tags(image)#3
 
+	Tags = Get_Image_Tags(image)#3
+	ImageID = image.filename
 	Insert_Into_Tag_Images(UserID,ImageID,Tags)#4
 	Insert_Into_Image_Tags(UserID,ImageID,Tags)#4
 
-	return Tags
+	result = {ImageID:Tags}
+	result = json.dumps(result)
+
+	return result
 
 @app.route('/append_tags',methods=['POST'])
 def append_tags():

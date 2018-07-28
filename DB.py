@@ -41,7 +41,8 @@ def Create_Tag_Images(UserID):
 def Save_To_ImageDB(UserID,ImageID,Image):
 	extension = Get_Extension(Image.filename)
 	
-	path = Image_DB + UserID + '/' + ImageID + '.' + extension
+	path = Image_DB + UserID + '/' + Image.filename
+	#path = Image_DB + UserID + '/' + ImageID + '.' + extension
 	Image.save(path)
 	return 0
 	
