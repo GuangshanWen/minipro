@@ -63,10 +63,11 @@ def upload_image():
 	#print image
 
  	ImageID = Generate_ImageID()#2
-	Save_To_ImageDB(UserID,ImageID,image)
-	print ImageID
+	path = Save_To_ImageDB(UserID,ImageID,image)
+	print path
 
-	Tags = Get_Image_Tags(image)#3
+	Tags = Get_Images_Tags(path)#3
+	print Tags
 	ImageID = image.filename
 	Insert_Into_Tag_Images(UserID,ImageID,Tags)#4
 	Insert_Into_Image_Tags(UserID,ImageID,Tags)#4

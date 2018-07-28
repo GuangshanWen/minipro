@@ -44,7 +44,7 @@ def Save_To_ImageDB(UserID,ImageID,Image):
 	path = Image_DB + UserID + '/' + Image.filename
 	#path = Image_DB + UserID + '/' + ImageID + '.' + extension
 	Image.save(path)
-	return 0
+	return path
 	
 def Get_Image_Tags(json_form):
 	return '0asd';
