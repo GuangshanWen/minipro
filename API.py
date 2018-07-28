@@ -1,7 +1,7 @@
 import wutil
 import sys
 sys.path.append('./aip')
-import ocr
+from ocr import *
 
 def get_bytes_for_image(image_path):
     with open(image_path, 'rb') as image_file:
@@ -27,8 +27,8 @@ if __name__ == '__main__':
 
 def Get_Images_Tags(path):
 	#return {wutil.Get_Random_Str(6)}
-	print 'in get tags',image_path_ocr(path)
-	return 'hello'
+	return image_path_ocr(path)
+	
 
 def Search_Image(Image):
 	return 'wtf'
