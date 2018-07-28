@@ -1,9 +1,15 @@
+import random
+import string
 import os
-
+import flask
 root = './Images/'
 
+def Get_Random_Str(n):
+	ranstr = ''.join(random.sample(string.ascii_letters + string.digits,n))
+	return ranstr
+
 def Generate_ImageID():
-	return 0
+	return Get_Random_Str(10)
 
 def Generate_UserID(json_form):
 	return json_form["nickname"]

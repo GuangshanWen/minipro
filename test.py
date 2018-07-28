@@ -8,7 +8,10 @@ url = 'http://134.175.178.44:8888'
 def test_upload_user_info():
 	path = '/upload_user_info'
 	myurl = url + path;
-	user_info = {"nickname":"fuckbug","gender":"boy","city":"Shenzhen","provice":"Guangdong","county":"China"}
+	user_info = {'nickname':'wen','gender':'boy','city':'Shenzhen','provice':'Guangdong','county':'China'}
+	
+		
+
 	r = requests.post(url = myurl,data = user_info)
 	#req = urllib2.Request(url = myurl, data = user_info)
 	#resp_data = urllib2.urlopen(req);
@@ -19,6 +22,12 @@ def test_upload_user_info():
 def test_upload_image():
 	path = '/upload_image'
 	myurl = url + path
+
+	data = {'user':'wen'}
+	image = {'image':open('./hello.PNG')}
+	
+	r = requests.post(url = myurl,data = data, files = image)
+	print r
 
 def test_append_tags():
 	path = '/append_tags'
