@@ -4,6 +4,9 @@ import os
 import flask
 root = './Images/'
 
+def Get_Extension(filename):
+	return filename.rsplit('.',1)[1].lower()
+
 def Get_Random_Str(n):
 	ranstr = ''.join(random.sample(string.ascii_letters + string.digits,n))
 	return ranstr

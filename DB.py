@@ -3,6 +3,8 @@ import flask
 import leveldb
 import json
 import os
+import API
+from wutil import *
 
 Image_DB = './Images/'
 root = './Metadata/'
@@ -37,7 +39,9 @@ def Create_Tag_Images(UserID):
 	leveldb.LevelDB(path)
 
 def Save_To_ImageDB(UserID,ImageID,Image):
-	path = Image_DB + UserID + '/' + ImageID + '.PNG'
+	extension = Get_Extension(Image.filename)
+	
+	path = Image_DB + UserID + '/' + ImageID + '.' + extension
 	Image.save(path)
 	return 0
 	

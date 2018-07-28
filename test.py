@@ -3,7 +3,7 @@ import json
 import urllib
 import urllib2
 
-url = 'http://134.175.178.44:8888'
+url = 'http://134.175.178.44:88889'
 
 def test_upload_user_info():
 	path = '/upload_user_info'

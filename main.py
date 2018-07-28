@@ -9,7 +9,7 @@ from API import *
 app = flask.Flask(__name__)
 
 addr = "172.16.0.17"
-myport = 8888
+myport = 88889
 
 @app.route('/upload_user_info',methods=['POST'])
 def upload_user_info():
@@ -45,15 +45,18 @@ def upload_image():
 # 2. generate ImageID
 # 3. call back-API to get image tags  
 # 4. insert new image-tags to redis
-	
+#	print flask.request.get_data()	
+	print flask.request.headers
 	UserID = flask.request.form['user']
-
+	#print type(flask.request.files['image'])
+	
 	ret = Check_User(UserID)
 	ret = 0
 	if ret == 1:
 		return 'unsafe user'	
 
 	image = flask.request.files.get('image')#1
+	print image.filename
  #	print image	
 #	image.save('hello.PNG')
  #	print usr_info 
