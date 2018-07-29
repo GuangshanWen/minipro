@@ -81,8 +81,10 @@ def upload_image():
 	if err_code == 0:
 		Insert_Into_Tag_Images(UserID,ImageID,Tags)
 		Insert_Into_Image_Tags(UserID,ImageID,Tags)
-		result[ImageID] = Tags
+		result['Tags'] = Tags
+		result['Imageid'] = ImageID
 	else :
+		result['Imageid'] = ImageID
 		result['err_msg'] = Tags
 	result['err_code'] = err_code
 	result = json.dumps(result)
