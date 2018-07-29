@@ -10,7 +10,7 @@ from wutil import *
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-Image_DB = './Images/'
+Image_DB = './static/'
 root = './Metadata/'
 Image_tags = '-Image-tags'
 Tag_Images = '-Tag-images'
