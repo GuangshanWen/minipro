@@ -20,7 +20,8 @@ def upload_user_info():
 # 5. return user ID to client
 	#print flask.request.headers
 	user_info = flask.request.form
-	print flask.request.headers
+	print user_info
+#	print flask.request.headers
        # print flask.request.body.nickName	
 	UserID = Generate_UserID(user_info)#2
 	print UserID
@@ -99,32 +100,40 @@ def upload_image():
 def append_tags():
 #1. receive image-tags
 #2. append coressponding tags-list
-
-	Image_Tags_info = request.get_data()
-	ret = Append_Tags_List(UserID,ImageID,Image)
-
-	return 'done'
+	ImageID = flask.request.form['ImageID']	
+	UserID = flask.request.form['nickName']
+	tag = flask.request.form['tag']
+	tag = {tag}
+	print ('in append_tags funtion :', Get_Tags(UserID,ImageID))
+	ret = Append_Tags_List(UserID,ImageID,tag)
+	
+	return Get_Tags(UserID,ImageID)
 
 @app.route('/search_image',methods=['POST','GET'])
 def search_image():
 #1. receive image(decode)
 #2. call back-end API to get result sorted image list(url list)
 #3. send to client 
-	Image = request.get_data()
-	Image_list = Search_Image(Image)
+#	Image = request.get_data()
+#	Image_list = Search_Image(Image,userpath)
+#       send(client...)
 
 	return 'image list'
 @app.route('/tag_search',methods=['POST','GET'])
-def tag_earch():
+def tag_search():
 #1. tag = request.get_tag()
 #2. user = request.get_user()
 #3. images_path_list = get_simi_image(tag)
-	userid = flask.request.form('userid')
-	tag = flask.request.form('tag')
-	image_list = get_simi_img(userid,tag)	
+	print flask.request.form
+	print flask.request
+	userid = flask.request.form['nickName']
+	tag = flask.request.form['tag']
 	
+	print userid,tag
+	image_list = get_sim_img(userid,tag)	
 	
-
+	return 'done'
+ 		
 
 if __name__ == '__main__':
 	app.run(host=addr,port=myport,threaded=False)

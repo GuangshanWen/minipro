@@ -3,8 +3,12 @@ import flask
 import leveldb
 import json
 import os
+import sys
 import API
 from wutil import *
+
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 Image_DB = './Images/'
 root = './Metadata/'
@@ -71,11 +75,15 @@ def Insert_Into_Image_Tags(UserID,ImageID,Tags):
 	path = root + UserID + Image_tags  
 
 	db = leveldb.LevelDB(path)
-	OriginTag = db.Get(ImageID,default='')
+	OriginTag = db.Get(ImageID,default=' ')
 	
 	for i in Tags:
-		OriginTag = '\n' + i	
-
+	#	print 'tagssss: ',i
+		if OriginTag == ' ':
+			OriginTag = i
+		else : 
+			OriginTag = OriginTag + '+' + i	
+	print ('insert in to image tags: ',OriginTag)
 	db.Put(ImageID,OriginTag)
 
 #	print OriginTag
@@ -86,20 +94,40 @@ def Insert_Into_Tag_Images(UserID,ImageID,Tags):
 	db = leveldb.LevelDB(path)
 	for tag in Tags:
 		OriginImgID = db.Get(tag,default='')
-		OriginImgID = OriginImgID + '\n'  + ImageID
+		if OriginImgID == '':
+			OriginImgID = ImageID
+		else:
+			OriginImgID = OriginImgID + ','  + ImageID
 		db.Put(tag,OriginImgID)
+	
 	
 	return 0	
 
-def Append_Tags_List(UserID,ImageID,Image):
+def Append_Tags_List(UserID,ImageID,tag):
 	#path_tag_images = root + UserID + Tag_Images
 	#path_image_tags = root + UserID + Image_tags
 
-	Insert_Into_Tag_Images(UserID,ImageID,Image)
-	Insert_Into_Image_Tags(UserID,ImageID,Image)
+	Insert_Into_Tag_Images(UserID,ImageID,tag)
+	Insert_Into_Image_Tags(UserID,ImageID,tag)
 	
+def Get_Tags(UserID,ImageID):
+	path = root + UserID + Image_tags
+	db = leveldb.LevelDB(path)
+	
+	print 'gettags::',db.Get(ImageID)
+	return db.Get(ImageID)
+
+def get_sim_img(userid,tag):
+	path = root + userid + Tag_Images
+	db = leveldb.LevelDB(path)
+	
+	Image_list = db.Get(tag,default = 'null')
+#	print Image_list	
 
 
-def get_simi_img(userid,tag):
-	db = leveldb.LevelDB()		 
+
+
 	
+
+		 
+		
