@@ -15,11 +15,17 @@ def image_path_ocr(image_path):
     time.sleep(0.3)
     engine = AipOcr(appId, apiKey, secretKey)
     result = engine.general(get_bytes_for_image(image_path))
-    print result
+    #print result
+    err_code = 0
     results = []
+    if not u'words_result' in result:
+	err_code = 1
+	results.append(result[u'error_msg'])
+	return err_code,results
+    #results = []
     for wr in result['words_result']:
         results.append(wr['words'].encode('utf-8'))
-    return results
+    return err_code,results
 
 #if __name__ == '__main__':
 #    results = image_path_ocr('test2.jpg')

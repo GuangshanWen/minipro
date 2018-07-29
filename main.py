@@ -1,4 +1,3 @@
-#-*-coding=utf-8 -*-
 import json
 #from flask import Flask
 #from flask import request
@@ -47,14 +46,17 @@ def upload_image():
 # 3. call back-API to get image tags  
 # 4. insert new image-tags to redis
 #	print flask.request.get_data()	
-	print flask.request.headers
+#	print flask.request.headers
 	UserID = flask.request.form['user']
 	#print type(flask.request.files['image'])
 	
 	ret = Check_User(UserID)
-	ret = 0
+	#ret = 0
 	if ret == 1:
-		return 'unsafe user'	
+		result = {}
+		result['err_code'] = 1
+		result['err_msg'] = 'user not found'
+		return json.dumps(result)	
 
 	image = flask.request.files.get('image')#1
 #	print image.filename
@@ -65,15 +67,19 @@ def upload_image():
 
  	ImageID = Generate_ImageID()#2
 	path = Save_To_ImageDB(UserID,ImageID,image)
-	print path
+#	print path
 
-	Tags = Get_Images_Tags(path)#3
-	print Tags
+	err_code,Tags = Get_Images_Tags(path)#3
+#	print Tags
 	ImageID = image.filename
 	Insert_Into_Tag_Images(UserID,ImageID,Tags)#4
 	Insert_Into_Image_Tags(UserID,ImageID,Tags)#4
-
-	result = {ImageID:Tags}
+	result = {}
+	if err_code == 0:
+		result[ImageID] = Tags
+	else :
+		result['err_msg'] = Tags
+	result['err_code'] = err_code
 	result = json.dumps(result)
 
 	return result
@@ -100,4 +106,4 @@ def search_image():
 
 
 if __name__ == '__main__':
-	app.run(host=addr,port=myport)
+	app.run(host=addr,port=myport,threaded=False)
