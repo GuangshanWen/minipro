@@ -15,7 +15,7 @@ def Generate_ImageID():
 	return Get_Random_Str(10)
 
 def Generate_UserID(json_form):
-	return json_form["nickname"]
+	return json_form["nickName"]
 
 
 def Insert_Into_DB(json_form):

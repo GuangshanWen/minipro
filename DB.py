@@ -100,5 +100,6 @@ def Append_Tags_List(UserID,ImageID,Image):
 	
 
 
-
+def get_simi_img(userid,tag):
+	db = leveldb.LevelDB()		 
 	

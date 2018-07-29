@@ -20,8 +20,8 @@ def upload_user_info():
 # 5. return user ID to client
 	#print flask.request.headers
 	user_info = flask.request.form
-	#print user_info	
-
+	print flask.request.headers
+       # print flask.request.body.nickName	
 	UserID = Generate_UserID(user_info)#2
 	print UserID
 	Create_User_DB(UserID)
@@ -52,7 +52,7 @@ def upload_image():
 # 4. insert new image-tags to redis
 #	print flask.request.get_data()	
 #	print flask.request.headers
-	UserID = flask.request.form['user']
+	UserID = flask.request.form['nickName']
 	#print type(flask.request.files['image'])
 	
 	ret = Check_User(UserID)
@@ -114,6 +114,16 @@ def search_image():
 	Image_list = Search_Image(Image)
 
 	return 'image list'
+@app.route('/tag_search',methods=['POST','GET'])
+def tag_earch():
+#1. tag = request.get_tag()
+#2. user = request.get_user()
+#3. images_path_list = get_simi_image(tag)
+	userid = flask.request.form('userid')
+	tag = flask.request.form('tag')
+	image_list = get_simi_img(userid,tag)	
+	
+	
 
 
 if __name__ == '__main__':
