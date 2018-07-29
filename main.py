@@ -35,11 +35,13 @@ def upload_user_info():
 	ret = Mkdir(UserID)#4
 	if ret != 0 :
 		pass
+	
 	result = {}
 	result['err_code'] = ret
 	result['userid'] = UserID
 	result = json.dumps(result)	
 	#print json_form["nickname"]
+	
 	return result#5
 
 @app.route('/upload_image',methods=['GET','POST'])
@@ -77,6 +79,7 @@ def upload_image():
 	ImageID = image.filename
 	#Insert_Into_Tag_Images(UserID,ImageID,Tags)#4
 	#Insert_Into_Image_Tags(UserID,ImageID,Tags)#4
+	
 	result = {}
 	if err_code == 0:
 		Insert_Into_Tag_Images(UserID,ImageID,Tags)
@@ -86,6 +89,7 @@ def upload_image():
 	else :
 		result['Imageid'] = ImageID
 		result['err_msg'] = Tags
+	
 	result['err_code'] = err_code
 	result = json.dumps(result)
 
