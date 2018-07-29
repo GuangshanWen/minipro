@@ -2,7 +2,7 @@ import random
 import string
 import os
 import flask
-root = './Images/'
+root = './static/'
 
 def Get_Extension(filename):
 	return filename.rsplit('.',1)[1].lower()
