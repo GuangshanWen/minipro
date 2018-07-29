@@ -27,6 +27,9 @@ def Create_Image_Tags_DB(UserID):
 	if isExist:
 		return 1
 	leveldb.LevelDB(path)
+
+	lock = open(path+'LOCK','w')
+	lock.close()
 	return 0
 
 def Create_Tag_Images(UserID):
@@ -35,8 +38,13 @@ def Create_Tag_Images(UserID):
 
 	if isExist :
 		return 1
-
+	
 	leveldb.LevelDB(path)
+
+	lock = open(path+'-LOCK','w')
+	lock.close()
+
+	return 0
 
 def Save_To_ImageDB(UserID,ImageID,Image):
 	extension = Get_Extension(Image.filename)
@@ -70,7 +78,7 @@ def Insert_Into_Image_Tags(UserID,ImageID,Tags):
 
 	db.Put(ImageID,OriginTag)
 
-	print OriginTag
+#	print OriginTag
 
 def Insert_Into_Tag_Images(UserID,ImageID,Tags):
 	path = root + UserID + Tag_Images

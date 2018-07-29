@@ -30,9 +30,9 @@ def Mkdir(UserID):
 	if not isExist :
 		os.makedirs(path)
 		print 'mkdir successfully'
-		return 0
+		#return 1
 
-	return 1
+	return 0
 def Check_User(UserID):
 	path = root + UserID
 	return not os.path.exists(path)
