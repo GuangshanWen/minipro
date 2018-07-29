@@ -102,11 +102,11 @@ def append_tags():
 #2. append coressponding tags-list
 	ImageID = flask.request.form['ImageID']	
 	UserID = flask.request.form['nickName']
-	tag = flask.request.form['tag']
-	tag = {tag}
-	print ('in append_tags funtion :', Get_Tags(UserID,ImageID))
+	tagtmp = flask.request.form['tag']
+	tag = {tagtmp}
+	#print ('in append_tags funtion :', Get_Tags(UserID,ImageID))
 	ret = Append_Tags_List(UserID,ImageID,tag)
-	
+	print Get_Images(UserID,tagtmp)	
 	return Get_Tags(UserID,ImageID)
 
 @app.route('/search_image',methods=['POST','GET'])
@@ -129,10 +129,10 @@ def tag_search():
 	userid = flask.request.form['nickName']
 	tag = flask.request.form['tag']
 	
-	print userid,tag
-	image_list = get_sim_img(userid,tag)	
+	#print userid,tag
+		
 	
-	return 'done'
+	return Get_Images(userid,tag)
  		
 
 if __name__ == '__main__':

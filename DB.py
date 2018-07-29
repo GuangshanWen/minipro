@@ -76,8 +76,13 @@ def Insert_Into_Image_Tags(UserID,ImageID,Tags):
 
 	db = leveldb.LevelDB(path)
 	OriginTag = db.Get(ImageID,default=' ')
+        	
 	
 	for i in Tags:
+		tag_list = OriginTag.split('+')
+		if i in tag_list:
+			continue
+
 	#	print 'tagssss: ',i
 		if OriginTag == ' ':
 			OriginTag = i
@@ -93,11 +98,16 @@ def Insert_Into_Tag_Images(UserID,ImageID,Tags):
 	
 	db = leveldb.LevelDB(path)
 	for tag in Tags:
-		OriginImgID = db.Get(tag,default='')
-		if OriginImgID == '':
+		OriginImgID = db.Get(tag,default=' ')
+		
+		image_list = OriginImgID.split('+')
+		if ImageID in image_list:
+			continue
+
+		if OriginImgID == ' ':
 			OriginImgID = ImageID
 		else:
-			OriginImgID = OriginImgID + ','  + ImageID
+			OriginImgID = OriginImgID + '+'  + ImageID
 		db.Put(tag,OriginImgID)
 	
 	
@@ -114,8 +124,15 @@ def Get_Tags(UserID,ImageID):
 	path = root + UserID + Image_tags
 	db = leveldb.LevelDB(path)
 	
-	print 'gettags::',db.Get(ImageID)
+	#print 'gettags::',db.Get(ImageID)
 	return db.Get(ImageID)
+
+def Get_Images(UserID,Tag):
+	path = root + UserID + Tag_Images
+	db = leveldb.LevelDB(path)
+
+	print 'Get Images list: ',db.Get(Tag)
+	return db.Get(Tag)
 
 def get_sim_img(userid,tag):
 	path = root + userid + Tag_Images

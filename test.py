@@ -6,7 +6,7 @@ import urllib2
 import sys
 
 url = 'http://134.175.178.44:88889'
-#sys.setdefaultencoding('utf-8')
+#sys.setdefaultencoding('utf8')
 def test_upload_user_info():
 	path = '/upload_user_info'
 	myurl = url + path;
@@ -26,7 +26,7 @@ def test_upload_image():
 	myurl = url + path
 
 	data = {'nickName':'wen'}
-	image = {'image':open('./test2.jpg')}
+	image = {'image':open('./test.jpg')}
 	
 	r = requests.post(url = myurl,data = data, files = image)
 	resp =  r.content.decode()
@@ -38,10 +38,10 @@ def test_append_tags():
 	path = '/append_tags'
 	myurl = url + path
 	
-	data = {'nickName':'wen','tag':'WTF','ImageID':'test2.jpg'}	
+	data = {'nickName':'wen','tag':'guangshan','ImageID':'test.jpg'}	
 	r = requests.post(url = myurl,data = data)	
 	
-	print r.content.decode()
+	print r.content
 
 def test_image_search():
 	path = '/search_image'
@@ -51,9 +51,11 @@ def test_tag_search():
 	path = '/tag_search'
 	myurl = url + path
 
-	data = {'nickName':'wen','tag':'hello world'}
+	data = {'nickName':'wen','tag':'guangshan'}
 
 	r = requests.post(url = myurl,data = data)
+	
+	print r.content
 
 if __name__ == '__main__':
 	test_upload_user_info()
