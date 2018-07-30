@@ -1,3 +1,4 @@
+import hashlib
 from ldb import *
 import flask
 import leveldb
@@ -14,6 +15,14 @@ Image_DB = './static/'
 root = './Metadata/'
 Image_tags = '-Image-tags'
 Tag_Images = '-Tag-images'
+Unique_Check_DB = '-UniqueCheck'
+
+def Create_Unique_CheckDB(UserID):
+	path = root + UserID + Unique_Check_DB;
+	leveldb.LevelDB(path)
+
+	return 0
+
 def Create_User_DB(UserID):
 	path = root + UserID
 	isExist = os.path.exists(path)
@@ -50,13 +59,27 @@ def Create_Tag_Images(UserID):
 
 	return 0
 
-def Save_To_ImageDB(UserID,ImageID,Image):
-	extension = Get_Extension(Image.filename)
+def Save_To_ImageDB(UserID,Image):
+	path = root + UserID + Unique_Check_DB
+	content = Image.read()
+	Hash = hashlib.md5(content).hexdigest()
+	db = leveldb.LevelDB(path)
 	
-	path = Image_DB + UserID + '/' + Image.filename
+	ImageID = db.Get(Hash,default = ' ')
+	if ImageID != ' ':
+		return False,ImageID,Image_DB + UserID + '/' + ImageID
+	
+	ImageID = Image.filename
+	db.Put(Hash,ImageID)
+	#extension = Get_Extension(Image.filename)
+	
+	path = Image_DB + UserID + '/' + ImageID
 	#path = Image_DB + UserID + '/' + ImageID + '.' + extension
-	Image.save(path)
-	return path
+	fil = open(path,'w')
+	#print content
+	fil.write(content)
+	fil.close()
+	return True,ImageID,path
 	
 def Get_Image_Tags(json_form):
 	return '0asd';
@@ -125,14 +148,14 @@ def Get_Tags(UserID,ImageID):
 	db = leveldb.LevelDB(path)
 	
 	#print 'gettags::',db.Get(ImageID)
-	return db.Get(ImageID)
+	return db.Get(ImageID,default=' ')
 
 def Get_Images(UserID,Tag):
 	path = root + UserID + Tag_Images
 	db = leveldb.LevelDB(path)
 
-	print 'Get Images list: ',db.Get(Tag)
-	return db.Get(Tag)
+	print 'Get Images list: ',db.Get(Tag,default = ' ')
+	return db.Get(Tag,default = ' ')
 
 def get_sim_img(userid,tag):
 	path = root + userid + Tag_Images

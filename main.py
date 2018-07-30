@@ -5,6 +5,7 @@ import flask
 from wutil import *
 from DB import *
 from API import *
+import hashlib
 
 app = flask.Flask(__name__)
 
@@ -24,10 +25,12 @@ def upload_user_info():
 #	print flask.request.headers
        # print flask.request.body.nickName	
 	UserID = Generate_UserID(user_info)#2
+
 	print UserID
 	Create_User_DB(UserID)
 	Create_Image_Tags_DB(UserID)
 	Create_Tag_Images(UserID)	
+	Create_Unique_CheckDB(UserID)
         
 	ret = Insert_Into_User_DB(UserID,user_info)#3
 	if ret !=0 :
@@ -65,26 +68,37 @@ def upload_image():
 		return json.dumps(result)	
 
 	image = flask.request.files.get('image')#1
+#	print type(hashlib.md5(image.read()).hexdigest())
+#	print image.read()
 #	print image.filename
  #	print image	
 #	image.save('hello.PNG')
  #	print usr_info 
 	#print image
 
- 	ImageID = Generate_ImageID()#2
-	path = Save_To_ImageDB(UserID,ImageID,image)
+ #	ImageID = Generate_ImageID()#2
+	Flag,ImageID,path = Save_To_ImageDB(UserID,image)
 #	print path
-
-	err_code,Tags = Get_Images_Tags(path)#3
+	print path	
+	if Flag == True:
+		err_code,Tags = Get_Images_Tags(path)#3
+		#print Tags
+	else :
+		err_code = 0
+		Tags = Get_Tags(UserID,ImageID)
+		print('Tags:',Tags)
 #	print Tags
-	ImageID = image.filename
+#	ImageID = image.filename
 	#Insert_Into_Tag_Images(UserID,ImageID,Tags)#4
 	#Insert_Into_Image_Tags(UserID,ImageID,Tags)#4
 	
 	result = {}
-	if err_code == 0:
+	if err_code == 0 and Flag == True:
 		Insert_Into_Tag_Images(UserID,ImageID,Tags)
 		Insert_Into_Image_Tags(UserID,ImageID,Tags)
+		result['Tags'] = Tags
+		result['Imageid'] = ImageID
+	elif Flag == False:
 		result['Tags'] = Tags
 		result['Imageid'] = ImageID
 	else :
@@ -107,6 +121,7 @@ def append_tags():
 	#print ('in append_tags funtion :', Get_Tags(UserID,ImageID))
 	ret = Append_Tags_List(UserID,ImageID,tag)
 	print Get_Images(UserID,tagtmp)	
+	print Get_Tags(UserID,ImageID)
 	return Get_Tags(UserID,ImageID)
 
 @app.route('/search_image',methods=['POST','GET'])

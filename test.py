@@ -19,18 +19,18 @@ def test_upload_user_info():
 	#resp_data = urllib2.urlopen(req);
 	#res = resp_data.read()
 	
-	print r	
+	print 'test_upload_user_info:',r	
 
 def test_upload_image():
 	path = '/upload_image'
 	myurl = url + path
 
 	data = {'nickName':'wen'}
-	image = {'image':open('./test.jpg')}
+	image = {'image':open('./hello.jpg')}
 	
 	r = requests.post(url = myurl,data = data, files = image)
 	resp =  r.content.decode()
-	print resp
+	print 'test image upload: ',resp
 	#Json = json.loads(resp)
 	#print Json
 
@@ -38,10 +38,10 @@ def test_append_tags():
 	path = '/append_tags'
 	myurl = url + path
 	
-	data = {'nickName':'wen','tag':'guangshan','ImageID':'test.jpg'}	
+	data = {'nickName':'wen','tag':'hain','ImageID':'hello.jpg'}	
 	r = requests.post(url = myurl,data = data)	
 	
-	print r.content
+	print 'test append tags:',r.content
 
 def test_image_search():
 	path = '/search_image'
@@ -51,13 +51,15 @@ def test_tag_search():
 	path = '/tag_search'
 	myurl = url + path
 
-	data = {'nickName':'wen','tag':'guangshan'}
+	data = {'nickName':'wen','tag':'hain'}
 
 	r = requests.post(url = myurl,data = data)
 	
-	print r.content
+	print 'test tag search: ',r.content
 
 if __name__ == '__main__':
+#	img = open('./test.jpg')
+#	print img.read()
 	test_upload_user_info()
 	test_upload_image()
 	test_append_tags()
