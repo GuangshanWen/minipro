@@ -54,20 +54,35 @@ def tags_change():
 	Old_Tag = flask.request.form['oldtag']
 	New_Tag = flask.request.form['newtag']
 	tags = Get_Tags(UserID,ImageID)	
-	tags = tags.split('+')	
+	tags = tags.split('+')
+	print 'get tags befor change' ,tags
+#	return 	'done'
+	Flag = False;
+	if New_Tag in tags:
+		Flag = True
+		tags.pop(tags.index(New_Tag))
 	if Old_Tag in tags:
 		tags[tags.index(Old_Tag)] = New_Tag
 	else :
 		return 'done'
+	print tags
+#	return 'done'
+
 #1 
 	Tag = ''
 	for tag in tags:
-		Tag = Tag + '+' + tag			
+		if Tag == '':
+			Tag = tag
+		else :
+			Tag = Tag + '+' + tag			
 	Tag = [Tag]
+	Delete_Image_Tags(UserID,ImageID)
 	Insert_Into_Image_Tags(UserID,ImageID,Tag)
-	
+	print 'after change: ' ,Get_Tags(UserID,ImageID)
+#	return 'done'	
 #2.
 	Image_list = Get_Images(UserID,Old_Tag)
+	print 'Imagelist before change : ',Image_list
 	Image_list = Image_list.split('+')
 	Image_list.pop(Image_list.index(ImageID))
 	
@@ -78,11 +93,16 @@ def tags_change():
 	else :
 		Img = ''
 		for img in Image_list:
-			Img = Img + '+' + img			
-
-#3.	 	
- 	Insert_Into_Tag_Images(UserID,ImageID,New_Tag)
-	print tags
+			if Img == '':
+				Img = img
+			else:
+				Img = Img + '+' + img			
+	print 'Imagelist after change',Get_Images(UserID,Old_Tag[0])
+#3.	 
+	print 'Imagelist before change tag: ', Get_Images(UserID,New_Tag)
+ 	if Flag == False:
+		Insert_Into_Tag_Images(UserID,ImageID,[New_Tag])
+	print 'Imagelist after change tag:',Get_Images(UserID,New_Tag)
 	return 'done'
 
 @app.route('/tag_delete',methods=['GET','POST'])
@@ -97,33 +117,38 @@ def tag_delete():
 	if not ImageID in Image_list:
 		return 'done'
 
-#1. 
+#1.
+	print 'Get Imagelist before delete: ',Image_list 
 	Image_list.pop(Image_list.index(ImageID))
 	Img = ''
 	for img in Image_list:
 		Img = Img + '+' + img			
 	
-	Tag = {Tag}
+	Tag = [Tag]
 	Insert_Into_Tag_Images(UserID,ImageID,Tag)	
-
+	print 'Get Imagelist after delete: ',Image_list
+#	return 'done'
 #2.	
 	Tags =	Get_Tags(UserID,ImageID)
 	Tags = Tags.split('+')
-
-	if not Tag in Tags:
+	print 'Tags list before delete: ',Tags	
+	if not Tag[0] in Tags:
 		return 'done'
 
-	Tags.pop(Tags.index(Tag))			
+	Tags.pop(Tags.index(Tag[0]))			
 	if not Tags:
 		Delete_Image_Tags(UserID,ImageID)
 		return 'done'
 	
 	Tag = ''
 	for tag in Tags:
-		Tag = Tag + '+' + tag
-
+		if Tag == '':
+			Tag = tag
+		else :
+			Tag = Tag + '+' + tag
+	Delete_Image_Tags(UserID,ImageID)
 	Insert_Into_Image_Tags(UserID,ImageID,[Tag])
-
+	print 'Tags list after delete : ',Get_Tags(UserID,ImageID)
 	return 'done'
 
 @app.route('/upload_image',methods=['GET','POST'])

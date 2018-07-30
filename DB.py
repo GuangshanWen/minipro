@@ -157,8 +157,8 @@ def Delete_Tag_Images(UserID,tag):
 	tag = tag[0]
 	db.Delete(tag)
 
-def Delete_Image_Tags(UseID,ImageID):
-	path = root + UserID +Image_tag
+def Delete_Image_Tags(UserID,ImageID):
+	path = root + UserID +Image_tags
 	db = leveldb.LevelDB(path)
 
 	db.Delete(ImageID)

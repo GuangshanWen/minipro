@@ -38,7 +38,7 @@ def test_append_tags():
 	path = '/append_tags'
 	myurl = url + path
 	
-	data = {'nickName':'wen','tag':'hain','ImageID':'hello.jpg'}	
+	data = {'nickName':'wen','tag':'helloman','ImageID':'hello.jpg'}	
 	r = requests.post(url = myurl,data = data)	
 	
 	print 'test append tags:',r.content
@@ -51,17 +51,38 @@ def test_tag_search():
 	path = '/tag_search'
 	myurl = url + path
 
-	data = {'nickName':'wen','tag':'hain'}
+	data = {'nickName':'wen','tag':'helloman'}
 
 	r = requests.post(url = myurl,data = data)
 	
 	print 'test tag search: ',r.content
 
+def test_tag_change():
+	path = '/tags_change'
+	myurl = url + path
+
+	data = {'nickName':'wen','oldtag':'helloman','ImageID':'hello.jpg','newtag':'wenguangshan'}
+	r = requests.post(url = myurl,data = data)
+
+	print 'test tag change :' , r.content
+
+def test_tag_delete():
+	path = '/tag_delete'
+	myurl = url + path
+
+	data = {'nickName':'wen','ImageID':'hello.jpg','tag':'helloman'}
+	r = requests.post(url = myurl,data = data)
+
+	print r.content
+
 if __name__ == '__main__':
 #	img = open('./test.jpg')
 #	print img.read()
-	test_upload_user_info()
-	test_upload_image()
-	test_append_tags()
-	test_image_search()
-	test_tag_search()
+	#test_upload_user_info()
+	#test_upload_image()
+	#test_append_tags()
+#	test_image_search()
+#	test_tag_search()
+#	test_tag_change()i
+
+	test_tag_delete()
