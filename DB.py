@@ -150,6 +150,19 @@ def Get_Tags(UserID,ImageID):
 	#print 'gettags::',db.Get(ImageID)
 	return db.Get(ImageID,default=' ')
 
+def Delete_Tag_Images(UserID,tag):
+	path = root + UserID +Tag_Images
+	db = leveldb.LevelDB(path)
+	
+	tag = tag[0]
+	db.Delete(tag)
+
+def Delete_Image_Tags(UseID,ImageID):
+	path = root + UserID +Image_tag
+	db = leveldb.LevelDB(path)
+
+	db.Delete(ImageID)
+
 def Get_Images(UserID,Tag):
 	path = root + UserID + Tag_Images
 	db = leveldb.LevelDB(path)

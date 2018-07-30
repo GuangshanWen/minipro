@@ -47,6 +47,84 @@ def upload_user_info():
 	#print json_form["nickname"]
 	
 	return result#5
+@app.route('/tags_change',methods=['GET','POST'])
+def tags_change():
+	UserID = flask.request.form['nickName']
+	ImageID = flask.request.form['ImageID']
+	Old_Tag = flask.request.form['oldtag']
+	New_Tag = flask.request.form['newtag']
+	tags = Get_Tags(UserID,ImageID)	
+	tags = tags.split('+')	
+	if Old_Tag in tags:
+		tags[tags.index(Old_Tag)] = New_Tag
+	else :
+		return 'done'
+#1 
+	Tag = ''
+	for tag in tags:
+		Tag = Tag + '+' + tag			
+	Tag = [Tag]
+	Insert_Into_Image_Tags(UserID,ImageID,Tag)
+	
+#2.
+	Image_list = Get_Images(UserID,Old_Tag)
+	Image_list = Image_list.split('+')
+	Image_list.pop(Image_list.index(ImageID))
+	
+	Old_Tag = [Old_Tag]
+	if not Image_list:
+		Delete_Tag_Images(UserID,Old_Tag)	
+	
+	else :
+		Img = ''
+		for img in Image_list:
+			Img = Img + '+' + img			
+
+#3.	 	
+ 	Insert_Into_Tag_Images(UserID,ImageID,New_Tag)
+	print tags
+	return 'done'
+
+@app.route('/tag_delete',methods=['GET','POST'])
+def tag_delete():
+	ImageID = flask.request.form['ImageID']
+	UserID = flask.request.form['nickName']
+
+	Tag = flask.request.form['tag']
+
+	Image_list = Get_Images(UserID,Tag)
+	Image_list = Image_list.split('+')
+	if not ImageID in Image_list:
+		return 'done'
+
+#1. 
+	Image_list.pop(Image_list.index(ImageID))
+	Img = ''
+	for img in Image_list:
+		Img = Img + '+' + img			
+	
+	Tag = {Tag}
+	Insert_Into_Tag_Images(UserID,ImageID,Tag)	
+
+#2.	
+	Tags =	Get_Tags(UserID,ImageID)
+	Tags = Tags.split('+')
+
+	if not Tag in Tags:
+		return 'done'
+
+	Tags.pop(Tags.index(Tag))			
+	if not Tags:
+		Delete_Image_Tags(UserID,ImageID)
+		return 'done'
+	
+	Tag = ''
+	for tag in Tags:
+		Tag = Tag + '+' + tag
+
+	Insert_Into_Image_Tags(UserID,ImageID,[Tag])
+
+	return 'done'
 
 @app.route('/upload_image',methods=['GET','POST'])
 def upload_image():
@@ -82,11 +160,12 @@ def upload_image():
 	print path	
 	if Flag == True:
 		err_code,Tags = Get_Images_Tags(path)#3
-		#print Tags
+		print 'from raw:',Tags
 	else :
 		err_code = 0
 		Tags = Get_Tags(UserID,ImageID)
-		print('Tags:',Tags)
+		Tags = Tags.split('+')
+		print('tags from db:',Tags)
 #	print Tags
 #	ImageID = image.filename
 	#Insert_Into_Tag_Images(UserID,ImageID,Tags)#4
