@@ -6,6 +6,7 @@ from wutil import *
 from DB import *
 from API import *
 import hashlib
+from search_image.main import search_similar_pics
 
 app = flask.Flask(__name__)
 
@@ -29,7 +30,7 @@ def upload_user_info():
 	print UserID
 	Create_User_DB(UserID)
 	Create_Image_Tags_DB(UserID)
-	Create_Tag_Images(UserID)	
+	Create_Tag_Images_DB(UserID)	
 	Create_Unique_CheckDB(UserID)
         
 	ret = Insert_Into_User_DB(UserID,user_info)#3
@@ -51,58 +52,25 @@ def upload_user_info():
 def tags_change():
 	UserID = flask.request.form['nickName']
 	ImageID = flask.request.form['ImageID']
-	Old_Tag = flask.request.form['oldtag']
-	New_Tag = flask.request.form['newtag']
-	tags = Get_Tags(UserID,ImageID)	
-	tags = tags.split('+')
-	print 'get tags befor change' ,tags
-#	return 	'done'
-	Flag = False;
-	if New_Tag in tags:
-		Flag = True
-		tags.pop(tags.index(New_Tag))
-	if Old_Tag in tags:
-		tags[tags.index(Old_Tag)] = New_Tag
-	else :
-		return 'done'
-	print tags
-#	return 'done'
+	OldTag = flask.request.form['oldtag']
+	NewTag = flask.request.form['newtag']
 
-#1 
-	Tag = ''
-	for tag in tags:
-		if Tag == '':
-			Tag = tag
-		else :
-			Tag = Tag + '+' + tag			
-	Tag = [Tag]
-	Delete_Image_Tags(UserID,ImageID)
-	Insert_Into_Image_Tags(UserID,ImageID,Tag)
-	print 'after change: ' ,Get_Tags(UserID,ImageID)
-#	return 'done'	
-#2.
-	Image_list = Get_Images(UserID,Old_Tag)
-	print 'Imagelist before change : ',Image_list
-	Image_list = Image_list.split('+')
-	Image_list.pop(Image_list.index(ImageID))
+
+	print 'before change Tag list: ',Get_Tags(UserID,ImageID)
+	print 'before change Image list of Old Tag', Get_Images(UserID,OldTag)
+	print 'before change Image list of New Tag', Get_Images(UserID,NewTag)
+	Change_Tag_In_List(UserID,ImageID,NewTag,OldTag)
+
 	
-	Old_Tag = [Old_Tag]
-	if not Image_list:
-		Delete_Tag_Images(UserID,Old_Tag)	
+	Delete_Image_From_List(UserID,ImageID,OldTag)
+
 	
-	else :
-		Img = ''
-		for img in Image_list:
-			if Img == '':
-				Img = img
-			else:
-				Img = Img + '+' + img			
-	print 'Imagelist after change',Get_Images(UserID,Old_Tag[0])
-#3.	 
-	print 'Imagelist before change tag: ', Get_Images(UserID,New_Tag)
- 	if Flag == False:
-		Insert_Into_Tag_Images(UserID,ImageID,[New_Tag])
-	print 'Imagelist after change tag:',Get_Images(UserID,New_Tag)
+	Append_Tag_Images(UserID,ImageID,NewTag)
+
+	print 'after change Tag list: ',Get_Tags(UserID,ImageID)
+	print 'after change Image list of old tag', Get_Images(UserID,OldTag)
+	print 'after change image list of new tag',Get_Images(UserID,NewTag)
+
 	return 'done'
 
 @app.route('/tag_delete',methods=['GET','POST'])
@@ -112,100 +80,49 @@ def tag_delete():
 
 	Tag = flask.request.form['tag']
 
-	Image_list = Get_Images(UserID,Tag)
-	Image_list = Image_list.split('+')
-	if not ImageID in Image_list:
-		return 'done'
+	print 'before delete Tag list: ',Get_Tags(UserID,ImageID)
+	print 'before delete Image list', Get_Images(UserID,Tag)
 
-#1.
-	print 'Get Imagelist before delete: ',Image_list 
-	Image_list.pop(Image_list.index(ImageID))
-	Img = ''
-	for img in Image_list:
-		Img = Img + '+' + img			
 	
-	Tag = [Tag]
-	Insert_Into_Tag_Images(UserID,ImageID,Tag)	
-	print 'Get Imagelist after delete: ',Image_list
-#	return 'done'
-#2.	
-	Tags =	Get_Tags(UserID,ImageID)
-	Tags = Tags.split('+')
-	print 'Tags list before delete: ',Tags	
-	if not Tag[0] in Tags:
-		return 'done'
+	Delete_Tag_From_List(UserID,ImageID,Tag)
 
-	Tags.pop(Tags.index(Tag[0]))			
-	if not Tags:
-		Delete_Image_Tags(UserID,ImageID)
-		return 'done'
-	
-	Tag = ''
-	for tag in Tags:
-		if Tag == '':
-			Tag = tag
-		else :
-			Tag = Tag + '+' + tag
-	Delete_Image_Tags(UserID,ImageID)
-	Insert_Into_Image_Tags(UserID,ImageID,[Tag])
-	print 'Tags list after delete : ',Get_Tags(UserID,ImageID)
+
+	Delete_Image_From_List(UserID,ImageID,Tag)
+
+	print 'after delete Tag list: ',Get_Tags(UserID,ImageID)
+	print 'after delete Image list', Get_Images(UserID,Tag)
+
 	return 'done'
 
 @app.route('/upload_image',methods=['GET','POST'])
 def upload_image():
-# 1. receive image
-# 2. generate ImageID
-# 3. call back-API to get image tags  
-# 4. insert new image-tags to redis
-#	print flask.request.get_data()	
-#	print flask.request.headers
 	UserID = flask.request.form['nickName']
-	#print type(flask.request.files['image'])
-	
 	ret = Check_User(UserID)
 	#ret = 0
-	if ret == 1:
+	if ret == 1: 
 		result = {}
 		result['err_code'] = 1
 		result['err_msg'] = 'user not found'
 		return json.dumps(result)	
 
-	image = flask.request.files.get('image')#1
-#	print type(hashlib.md5(image.read()).hexdigest())
-#	print image.read()
-#	print image.filename
- #	print image	
-#	image.save('hello.PNG')
- #	print usr_info 
-	#print image
 
- #	ImageID = Generate_ImageID()#2
-	Flag,ImageID,path = Save_To_ImageDB(UserID,image)
-#	print path
-	print path	
-	if Flag == True:
-		err_code,Tags = Get_Images_Tags(path)#3
-		print 'from raw:',Tags
-	else :
-		err_code = 0
-		Tags = Get_Tags(UserID,ImageID)
-		Tags = Tags.split('+')
-		print('tags from db:',Tags)
-#	print Tags
-#	ImageID = image.filename
-	#Insert_Into_Tag_Images(UserID,ImageID,Tags)#4
-	#Insert_Into_Image_Tags(UserID,ImageID,Tags)#4
+	image = flask.request.files.get('image')#1
+	Flag,ImageID,path = Save_To_ImageDB(UserID,image) 
 	
+	
+	err_code,Tags = Get_Images_Tags(path)
+
+	
+	if err_code == 0:
+		for tag in Tags:
+			Append_Tags_List(UserID,ImageID,tag)
+
+
 	result = {}
-	if err_code == 0 and Flag == True:
-		Insert_Into_Tag_Images(UserID,ImageID,Tags)
-		Insert_Into_Image_Tags(UserID,ImageID,Tags)
+	if err_code == 0 : #API
 		result['Tags'] = Tags
 		result['Imageid'] = ImageID
-	elif Flag == False:
-		result['Tags'] = Tags
-		result['Imageid'] = ImageID
-	else :
+	else : #API
 		result['Imageid'] = ImageID
 		result['err_msg'] = Tags
 	
@@ -220,11 +137,11 @@ def append_tags():
 #2. append coressponding tags-list
 	ImageID = flask.request.form['ImageID']	
 	UserID = flask.request.form['nickName']
-	tagtmp = flask.request.form['tag']
-	tag = {tagtmp}
+	tag = flask.request.form['tag']
+
 	#print ('in append_tags funtion :', Get_Tags(UserID,ImageID))
 	ret = Append_Tags_List(UserID,ImageID,tag)
-	print Get_Images(UserID,tagtmp)	
+	print Get_Images(UserID,tag)	
 	print Get_Tags(UserID,ImageID)
 	return Get_Tags(UserID,ImageID)
 
@@ -233,11 +150,28 @@ def search_image():
 #1. receive image(decode)
 #2. call back-end API to get result sorted image list(url list)
 #3. send to client 
-#	Image = request.get_data()
-#	Image_list = Search_Image(Image,userpath)
-#       send(client...)
+	UserID = flask.request.form['nickName']
+        ret = Check_User(UserID)
+        if ret == 1:
+                result = {}
+                result['err_code'] = 1
+                result['err_msg'] = 'user not found'
+                return json.dumps(result)
 
-	return 'image list'
+        image = flask.request.files.get('image');
+        image.save("temp/"+image.filename);
+        query_img="temp/"+image.filename;
+        #dst_dir="static/"+;
+        dst_dir="static/"+UserID+"/";
+        result_image_list = search_similar_pics(query_img, dst_dir);
+
+#print(result_image_list);
+        result="";
+        for r_image in result_image_list:
+                result=result+r_image+",";
+        return result;
+
+
 @app.route('/tag_search',methods=['POST','GET'])
 def tag_search():
 #1. tag = request.get_tag()
@@ -248,7 +182,7 @@ def tag_search():
 	userid = flask.request.form['nickName']
 	tag = flask.request.form['tag']
 	
-	#print userid,tag
+	print userid,tag
 		
 	
 	return Get_Images(userid,tag)
