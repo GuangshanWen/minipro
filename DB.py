@@ -182,7 +182,7 @@ def Delete_Tag_From_List(UserID,ImageID,Tag):
 		Tag_list.pop(Tag_list.index(Tag))
 
 	if not Tag_list:
-		db = leveldb.LevelDB(path)
+	#	db = leveldb.LevelDB(path)
 		db.Delete(ImageID)
 		return
 
