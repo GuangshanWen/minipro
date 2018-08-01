@@ -71,7 +71,7 @@ def tags_change():
 	print 'after change Image list of old tag', Get_Images(UserID,OldTag)
 	print 'after change image list of new tag',Get_Images(UserID,NewTag)
 
-	return 'done'
+	return Get_Tags(UserID,ImageID)
 
 @app.route('/tag_delete',methods=['GET','POST'])
 def tag_delete():
@@ -92,7 +92,7 @@ def tag_delete():
 	print 'after delete Tag list: ',Get_Tags(UserID,ImageID)
 	print 'after delete Image list', Get_Images(UserID,Tag)
 
-	return 'done'
+	return Get_Tags(UserID,ImageID)
 
 @app.route('/upload_image',methods=['GET','POST'])
 def upload_image():
@@ -152,24 +152,36 @@ def search_image():
 #3. send to client 
 	UserID = flask.request.form['nickName']
         ret = Check_User(UserID)
-        if ret == 1:
-                result = {}
+        
+	result = {}
+	if ret == 1:
+        #        result = {}
                 result['err_code'] = 1
                 result['err_msg'] = 'user not found'
+		result['image_list'] = ""
                 return json.dumps(result)
+	else:
+		result['err_code'] = 0
 
         image = flask.request.files.get('image');
         image.save("temp/"+image.filename);
         query_img="temp/"+image.filename;
         #dst_dir="static/"+;
-        dst_dir="static/"+UserID+"/";
+        dst_dir="static/"+UserID+"/"
         result_image_list = search_similar_pics(query_img, dst_dir);
 
 #print(result_image_list);
-        result="";
-        for r_image in result_image_list:
-                result=result+r_image+",";
-        return result;
+        tmp="";
+        #for r_image in result_image_list:
+         #       tmp=tmp+r_image+",";
+        if len(result_image_list) != 0:
+		result['err_code'] = 0
+		result['image_result'] = ','.join(result_image_list)
+	else :
+		result['err_code'] = 1
+		result['image_result'] = tmp
+	
+	return json.dumps(result)
 
 
 @app.route('/tag_search',methods=['POST','GET'])
@@ -184,9 +196,16 @@ def tag_search():
 	
 	print userid,tag
 		
-	
-	return Get_Images(userid,tag)
- 		
+	result = {}
+	image_list = Get_Images(userid,tag)
+	if len(image_list):
+		result['image_result'] = ','.join(image_list.split(part_char))
+		result['err_code'] = 0
+ 	else:
+		result['image_result'] = ''
+		result['err_code'] = 1
+
+	return json.dumps(result)
 
 if __name__ == '__main__':
 	app.run(host=addr,port=myport,threaded=False)
