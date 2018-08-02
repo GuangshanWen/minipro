@@ -1,3 +1,4 @@
+import jieba
 import json
 #from flask import Flask
 #from flask import request
