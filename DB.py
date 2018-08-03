@@ -215,6 +215,8 @@ def Delete_Image_From_List(UserID,ImageID,Tag):
 	db.Put(Tag,Image_list)
 
 def Change_Tag_In_List(UserID,ImageID,NewTag,OldTag):
+	if NewTag == '':
+		return
 	path = root + UserID +Image_Tags
 	db = leveldb.LevelDB(path)
 
@@ -223,7 +225,9 @@ def Change_Tag_In_List(UserID,ImageID,NewTag,OldTag):
 
 	if not OldTag in Tag_list:
 		return 
-	else:
+	elif NewTag in Tag_list:
+		Tag_list.pop(Tag_list.index(OldTag))
+	else:	
 		Tag_list[Tag_list.index(OldTag)] = NewTag
 	
 	Tag_list = part_char.join(Tag_list)

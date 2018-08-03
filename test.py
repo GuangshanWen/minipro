@@ -19,14 +19,22 @@ def test_upload_user_info():
 	#resp_data = urllib2.urlopen(req);
 	#res = resp_data.read()
 	
-	print 'test_upload_user_info:',r	
+	print 'test_upload_user_info:',r.content	
+
+def test_recommended_image():
+	path = '/recommended_image'
+	myurl = url + path
+	data = {'nickName':'wen'}
+	
+	r = requests.post(url = myurl,data = data)
+	print r.content
 
 def test_upload_image():
 	path = '/upload_image'
 	myurl = url + path
 
 	data = {'nickName':'wen'}
-	image = {'image':open('./hello.jpg')}
+	image = {'image':open('./test2.jpg')}
 	
 	r = requests.post(url = myurl,data = data, files = image)
 	resp =  r.content.decode()
@@ -38,7 +46,7 @@ def test_append_tags():
 	path = '/append_tags'
 	myurl = url + path
 	
-	data = {'nickName':'wen','tag':'helloman','ImageID':'hello.jpg'}	
+	data = {'nickName':'wen','tag':'wenwen','ImageID':'test.jpg'}	
 	r = requests.post(url = myurl,data = data)	
 	
 	print 'test append tags:',r.content
@@ -46,12 +54,15 @@ def test_append_tags():
 def test_image_search():
 	path = '/search_image'
 	myurl  = url + path
+	
+	data = {'nickName':'wen'}
+	files = {'image':open('./test.jpg')}	
 
 def test_tag_search():
 	path = '/tag_search'
 	myurl = url + path
 
-	data = {'nickName':'wen','tag':'helloman'}
+	data = {'nickName':'wen','tag':'wenwen'}
 
 	r = requests.post(url = myurl,data = data)
 	
@@ -61,7 +72,7 @@ def test_tag_change():
 	path = '/tags_change'
 	myurl = url + path
 
-	data = {'nickName':'wen','oldtag':'helloman','ImageID':'hello.jpg','newtag':'wenguangshan'}
+	data = {'nickName':'wen','oldtag':'wenwen','ImageID':'test.jpg','newtag':'惹不起'}
 	r = requests.post(url = myurl,data = data)
 
 	print 'test tag change :' , r.content
@@ -70,7 +81,7 @@ def test_tag_delete():
 	path = '/tag_delete'
 	myurl = url + path
 
-	data = {'nickName':'wen','ImageID':'hello.jpg','tag':'helloman'}
+	data = {'nickName':'wen','ImageID':'test.jpg','tag':'wenwen'}
 	r = requests.post(url = myurl,data = data)
 
 	print r.content
@@ -78,11 +89,11 @@ def test_tag_delete():
 if __name__ == '__main__':
 #	img = open('./test.jpg')
 #	print img.read()
-	#test_upload_user_info()
-	#test_upload_image()
-	#test_append_tags()
-#	test_image_search()
-#	test_tag_search()
-#	test_tag_change()i
-
+	test_upload_user_info()
+	test_upload_image()
+	test_append_tags()
+	test_image_search()
+	test_tag_search()
+	test_tag_change()
+	test_recommended_image()
 	test_tag_delete()
