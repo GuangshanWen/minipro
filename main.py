@@ -42,21 +42,54 @@ __ResultImage__ = 'Imageid'
 def deblured_image():
 	pass
 
+@app.route('/collect_image',methods=['POST','GET'])
+def collect_image():
+	ImageID = flask.request.form[__ImageID__]
+	UserID = flask.request.form[__NickName__]
+	
+	global_tags  = Get_Global_Tag(ImageID)
+
+	global_dir = './static/global_image/'
+	image = global_dir + ImageID
+ 
+	isExist = os.path.exists(image)
+	if not isExist:
+		return
+	
+	img = open(image)
+	content = img.read()
+	ImageID = Save_To_Local(UserID,ImageID,content) # save to local dir
+
+	Tags = json.loads(global_tags)
+	Tags = Tags.keys()
+
+	for tag in Tags:
+		Append_Tags_List(UserID,ImageID,tag)
+	
+	return ImageID
+
 
 @app.route('/recommended_image',methods=['POST','GET'])
 def recommended_image():
 	user_info = flask.request.form[__NickName__]
 	count = flask.request.form['count'] #client +1
 	page = flask.request.form['page']
-	global_dir = './static/'+user_info
+	global_dir = './static/global_image/'
 		
 	files = os.listdir(global_dir)
 	
 	n = page
 	#subset = random.sample(files,n)
-	subset = Get_Fresh_Images(user_info,files,count,page)	
+	print 'files:',files
+	subset = Get_Fresh_Images(user_info,files,count,page)
+	print'subset:: ', subset
+	image_list = {}
+	for i in subset:
+		image_list[i] = Get_Global_Tag(i)	
+	print image_list
 	result = {}
-	result[__ResultImg__] = ','.join(subset)
+	result[__ResultImg__] = image_list
+	#result[__ResultImg__] = ','.join(subset)
 	result[__ErrCode__] = 0
 	result['page'] = n
 	return json.dumps(result)
@@ -80,6 +113,7 @@ def upload_user_info():
 	Create_Image_Tags_DB(UserID)
 	Create_Tag_Images_DB(UserID)	
 	Create_Unique_CheckDB(UserID)
+	Create_Globalmetadata()
         
 	ret = Insert_Into_User_DB(UserID,user_info)#3
 	if ret !=0 :
@@ -165,8 +199,8 @@ def upload_image():
 		for tag in Tags:
 			print tag
 			Append_Tags_List(UserID,ImageID,tag)
-
-
+	Insert_Into_Globaldb(ImageID,Tags[0])
+			
 	result = {}
 	if err_code == 0 : #API
 		result[__TagList__] = [Tags[0]]
@@ -187,9 +221,10 @@ def append_tags():
 	ImageID = flask.request.form[__ImageID__]	
 	UserID = flask.request.form[__NickName__]
 	tag = flask.request.form[__Tag__]
-
+	print 'in append tag'
 	#print ('in append_tags funtion :', Get_Tags(UserID,ImageID))
 	ret = Append_Tags_List(UserID,ImageID,tag)
+	#Insert_Into_Globaldb(ImageID,tag)	
 	print Get_Images(UserID,tag)	
 	print Get_Tags(UserID,ImageID)
 	return Get_Tags(UserID,ImageID)
@@ -257,4 +292,5 @@ def tag_search():
 	return json.dumps(result)
 
 if __name__ == '__main__':
-	app.run(host=addr,port=myport,threaded=False,ssl_context=('../doutu.crt','../doutu.key'))
+	app.run(host=addr,port=myport,threaded=False)
+#	app.run(host=addr,port=myport,threaded=False,ssl_context=('../doutu.crt','../doutu.key'))

@@ -5,7 +5,7 @@ sys.path.append('./aip')
 from ocr import *
 import time
 
-blur_flag = True
+blur_flag = False
 def jie_ba(string):
 	cut = jieba.cut_for_search(string)
 	strings = ','.join(cut)
