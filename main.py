@@ -1,4 +1,4 @@
-import jieba
+#import jieba
 import json
 import flask
 from wutil import *
@@ -13,7 +13,7 @@ import common
 app = flask.Flask(__name__)
 
 addr = "172.16.0.17"
-myport = 88889
+myport = 23353
 
 
 global __ImageID__,__NickName__,__ErrCode__,__UserID__,__OldTag__,__NewTag__,__ErrMsg__,__Image__,__Tag__,__ResultImg__,__ResultImage__,__TagList__
@@ -45,20 +45,20 @@ def deblured_image():
 
 @app.route('/recommended_image',methods=['POST','GET'])
 def recommended_image():
-	n = 10
 	user_info = flask.request.form[__NickName__]
-	
+	count = flask.request.form['count'] #client +1
+	page = flask.request.form['page']
 	global_dir = './static/'+user_info
-	
+		
 	files = os.listdir(global_dir)
-	if n > len(files):
-		n = len(files)
-	subset = random.sample(files,n)
 	
+	n = page
+	#subset = random.sample(files,n)
+	subset = Get_Fresh_Images(user_info,files,count,page)	
 	result = {}
 	result[__ResultImg__] = ','.join(subset)
 	result[__ErrCode__] = 0
-	
+	result['page'] = n
 	return json.dumps(result)
 
 @app.route('/upload_user_info',methods=['POST'])
@@ -157,7 +157,7 @@ def upload_image():
 	image = flask.request.files.get(__Image__)#1
 	Flag,ImageID,path = Save_To_ImageDB(UserID,image) 
 	
-	
+	app.logger.info('hello world')	
 	err_code,Tags = Get_Images_Tags(path)
 
 	
@@ -169,7 +169,7 @@ def upload_image():
 
 	result = {}
 	if err_code == 0 : #API
-		result[__TagList__] = Tags
+		result[__TagList__] = [Tags[0]]
 		result[__ResultImage__] = ImageID
 	else : #API
 		result[__ResultImage__] = ImageID
@@ -257,4 +257,4 @@ def tag_search():
 	return json.dumps(result)
 
 if __name__ == '__main__':
-	app.run(host=addr,port=myport,threaded=False)
+	app.run(host=addr,port=myport,threaded=False,ssl_context=('../doutu.crt','../doutu.key'))
