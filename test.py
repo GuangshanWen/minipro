@@ -10,7 +10,7 @@ url = 'http://134.175.178.44:88889'
 def test_upload_user_info():
 	path = '/upload_user_info'
 	myurl = url + path;
-	user_info = {'nickName':'guangshan','gender':'boy','city':'Shenzhen','provice':'Guangdong','country':'China'}
+	user_info = {'nickName':'wen','gender':'boy','city':'Shenzhen','provice':'Guangdong','country':'China'}
 	
 		
 
@@ -41,8 +41,8 @@ def test_upload_image():
 	path = '/upload_image'
 	myurl = url + path
 
-	data = {'nickName':'guangshan'}
-	image = {'image':open('./hello.PNG')}
+	data = {'nickName':'wen'}
+	image = {'image':open('./test.jpg')}
 	
 	r = requests.post(url = myurl,data = data, files = image)
 	resp =  r.content.decode()
@@ -100,9 +100,9 @@ if __name__ == '__main__':
 	test_upload_user_info()
 	test_upload_image()
 	test_append_tags()
-#	test_image_search()
+	test_image_search()
 	test_tag_search()
 	test_collect_image()
-#	test_tag_change()
+	test_tag_change()
 	test_recommended_image()
-#	test_tag_delete()
+	test_tag_delete()
