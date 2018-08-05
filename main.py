@@ -74,10 +74,15 @@ def collect_image():
 @app.route('/hot_collect',methods=['POST','GET'])
 def hot_collect():
 	global_dir = './static/global_image/'
-	files = os.listdir(global_dir)
+	#files = os.listdir(global_dir)
 	count = flask.request.form['count']
 	page = flask.request.form['page']
-
+	page = int(page)
+	count = int(count)
+	
+	files = os.listdir(global_dir)
+	
+	
 	print 'files~~~~ ',files	
 	result = {}
 	for f in files:
@@ -298,7 +303,7 @@ def search_image():
         image.save("temp/"+image.filename);
         query_img="temp/"+image.filename;
         #dst_dir="static/"+;
-        dst_dir="static/"+UserID+"/"
+        dst_dir="static/global_image/"
         result_image_list = search_similar_pics(query_img, dst_dir);
 
 #print(result_image_list);
