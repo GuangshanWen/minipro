@@ -5,7 +5,7 @@ sys.path.append('./aip')
 from ocr import *
 import time
 
-blur_flag = False
+blur_flag = True
 def jie_ba(string):
 	cut = jieba.cut_for_search(string)
 	strings = ','.join(cut)
@@ -15,7 +15,7 @@ def jie_ba(string):
 	
 	ss =  strings.split(',')
 	for i in ss:
-		if len(ss) > 1:
+		if len(ss) >= 1:
 			result.append(i)	
 	return result
 def get_bytes_for_image(image_path):

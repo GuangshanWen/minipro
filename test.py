@@ -10,7 +10,7 @@ url = 'http://134.175.178.44:88889'
 def test_upload_user_info():
 	path = '/upload_user_info'
 	myurl = url + path;
-	user_info = {'nickName':'wen','gender':'boy','city':'Shenzhen','provice':'Guangdong','country':'China'}
+	user_info = {'nickName':'mike','gender':'boy','city':'Shenzhen','provice':'Guangdong','country':'China'}
 	
 		
 
@@ -25,7 +25,7 @@ def test_collect_image():
 	path = '/collect_image'
 	myurl = url+path
 	
-	data = {'nickName':'wen','ImageID':'hello.PNG'}
+	data = {'nickName':'mike','ImageID':'wxe7de239a7151eed3.o6zAJs0VezsBIxd7TErI0ALRa0k4.dFgXWmZRbNng8a47796d754cdc655e9626ea34caada1.jpeg'}
 	r = requests.post(url = myurl,data = data)
 
 	print r.content
@@ -97,12 +97,12 @@ def test_tag_delete():
 if __name__ == '__main__':
 #	img = open('./test.jpg')
 #	print img.read()
-	test_upload_user_info()
-	test_upload_image()
-	test_append_tags()
-	test_image_search()
-	test_tag_search()
+#	test_upload_user_info()
+##	test_upload_image()
+#	test_append_tags()
+#	test_image_search()
+#	test_tag_search()
 	test_collect_image()
-	test_tag_change()
-	test_recommended_image()
-	test_tag_delete()
+#	test_tag_change()
+#	test_recommended_image()
+#	test_tag_delete()

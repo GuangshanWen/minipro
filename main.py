@@ -1,4 +1,5 @@
-#import jieba
+import operator
+import jieba
 import json
 import flask
 from wutil import *
@@ -54,20 +55,63 @@ def collect_image():
  
 	isExist = os.path.exists(image)
 	if not isExist:
-		return
+		return 'exist'
 	
 	img = open(image)
 	content = img.read()
 	ImageID = Save_To_Local(UserID,ImageID,content) # save to local dir
+	Increase_Hot_Image(ImageID)		
 
 	Tags = json.loads(global_tags)
 	Tags = Tags.keys()
-
+	Tags = Tags[0]
+	Tags = jie_ba(Tags)
 	for tag in Tags:
 		Append_Tags_List(UserID,ImageID,tag)
 	
 	return ImageID
 
+@app.route('/hot_collect',methods=['POST','GET'])
+def hot_collect():
+	global_dir = './static/global_image/'
+	files = os.listdir(global_dir)
+	count = flask.request.form['count']
+	page = flask.request.form['page']
+
+	print 'files~~~~ ',files	
+	result = {}
+	for f in files:
+		#Tags = Get_Global_Tag(f)
+		Times = Get_Collect_Time(f)
+	#	print 'Tags in hot collect: ',Tags
+		if Times != '':
+			result[f] = int(Times)
+		else:
+			result[f] = 0
+	
+	sorted_x = sorted(result.items(),key=operator.itemgetter(1))
+	print 'sorted~~~~ ',sorted_x
+	result = {}
+	for i in sorted_x:
+		f = i[0]
+		t = i[1]		
+			
+		Tag = Get_Global_Tag(f)
+		print 'Tag ~~~ ',Tag
+
+		if Tag == '':
+			Tag = {"NULL":"0"}
+			Tag = json.dumps(Tag)
+			#print "Tag!!!!!!: ",Tag
+		#print 'Tag: ~~~~ ',Tag
+		Tag = json.loads(Tag)
+		keys = list(Tag.keys())		
+		result[f] = {keys[0]:str(t)}	
+	result_image = {}
+	result_image['image_result'] = result
+	result_image['err_code'] = 0
+
+	return json.dumps(result_image)	
 
 @app.route('/recommended_image',methods=['POST','GET'])
 def recommended_image():
@@ -85,7 +129,10 @@ def recommended_image():
 	print'subset:: ', subset
 	image_list = {}
 	for i in subset:
-		image_list[i] = Get_Global_Tag(i)	
+		#image_list[i] = Get_Global_Tag(i)	
+		val = Get_Global_Tag(i)
+		if val != '':
+			image_list[i] = val
 	print image_list
 	result = {}
 	result[__ResultImg__] = image_list
@@ -292,5 +339,5 @@ def tag_search():
 	return json.dumps(result)
 
 if __name__ == '__main__':
-	app.run(host=addr,port=myport,threaded=False)
-#	app.run(host=addr,port=myport,threaded=False,ssl_context=('../doutu.crt','../doutu.key'))
+#	app.run(host=addr,port=myport,threaded=False)
+	app.run(host=addr,port=myport,threaded=False,ssl_context=('../doutu.crt','../doutu.key'))

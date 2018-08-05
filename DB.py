@@ -23,7 +23,30 @@ Unique_Check_DB = '-UniqueCheck'
 count_db = 'count_db'
 Global_dir = 'global_image'
 Global_metadata = 'global_metadata'
+Global_Hot = 'Global_Hot'
 
+def Increase_Hot_Image(ImageID):
+	path = root + Global_Hot
+	db = leveldb.LevelDB(path)
+
+	val = db.Get(ImageID,default = '')
+	if val == '':
+		db.Put(ImageID,'1')
+	else:
+		val = int(val) + 1
+		db.Put(ImageID,str(val))
+	
+	return
+
+def Get_Collect_Time(ImageID):
+	path = root + Global_Hot
+	db = leveldb.LevelDB(path)
+	
+	val = db.Get(ImageID,default = '')
+	if val == '':
+		return '0'
+	else :
+		return val
 
 def Save_To_Local(UserID,ImageID,content):
 	#save global image to local user
@@ -170,7 +193,7 @@ def Save_To_ImageDB(UserID,Image):
 		fil = open(global_path,'w')
 		fil.write(content)
 		fil.close()
-
+	
 		globaldb.Put(Hash,ImageID)
 
 		#globaltag = Image_DB + Global_metadata + '/' +' global'
@@ -179,6 +202,7 @@ def Save_To_ImageDB(UserID,Image):
 	#	globaldb.Put(Hash,value)		
 	
 	return True,ImageID,path
+
 def Get_Global_Tag(ImageID):
 	path = Image_DB + Global_metadata + '/' + 'global'
 	db = leveldb.LevelDB(path)
@@ -188,6 +212,8 @@ def Get_Global_Tag(ImageID):
 	return value
 
 def Insert_Into_Globaldb(ImageID,Tag):
+	if len(Tag) < 1:
+		return
 	path = Image_DB +Global_metadata + '/' + 'global'
 	db = leveldb.LevelDB(path)
 
@@ -373,10 +399,12 @@ def Get_Tags(UserID,ImageID):
 def Get_Images(UserID,Tag):
 	
 	if Tag == '':#return all images
+
 		path = Image_DB + UserID
 		files = os.listdir(path)
 		result = part_char.join(files)
-
+		
+		print 'return all images',result
 		return result
 
 	path = root + UserID + Tag_Images
