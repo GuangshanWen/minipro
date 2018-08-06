@@ -81,11 +81,25 @@ def hot_collect():
 	count = int(count)
 	
 	files = os.listdir(global_dir)
-	
-	
+	files_len = len(files)
+	index_start = 0
+	index_end = 0
+	#new insert
+	if (count)*(page-1) > files_len:
+		index_start = files_len
+		index_end = files_len
+	else:
+		index_start = (count)*(page-1)
+		if count * page <= files_len:
+			leng = count
+		else :
+			leng = files_len - (count)*(pages-1)
+		index_end = index_start + leng
+					
+	#end new insert
 	print 'files~~~~ ',files	
 	result = {}
-	for f in files:
+	for f in files[index_start:index_end]:
 		#Tags = Get_Global_Tag(f)
 		Times = Get_Collect_Time(f)
 	#	print 'Tags in hot collect: ',Tags
@@ -115,7 +129,7 @@ def hot_collect():
 	result_image = {}
 	result_image['image_result'] = result
 	result_image['err_code'] = 0
-
+	result_image['page'] = page
 	return json.dumps(result_image)	
 
 @app.route('/recommended_image',methods=['POST','GET'])
@@ -329,18 +343,45 @@ def tag_search():
 	print flask.request
 	userid = flask.request.form[__NickName__]
 	tag = flask.request.form[__Tag__]
+
+	page = flask.request.form['page']
+	page = int(page)
+	count = flask.request.form['count']
+	count = int(count)
 	
-	print userid,tag
-		
+	print userid,tag	
+	
 	result = {}
 	image_list = Get_Images(userid,tag)
+	image_list = image_list.split(part_char)
+	image_len = len(image_list)
+	
+	index_start = 0
+	index_end = 0
+	print 'image_list~~~~: ',image_list
+	if count * (page-1) > image_len:
+		index_start = image_len
+		index_end = image_len
+	else:
+		index_start = (count)* (page-1)
+		if count*page <= image_len:
+			leng = count
+		else:
+			leng = image_len - (count)*(page-1)
+		index_end = index_start + leng 
+	print'[start,end]: ',index_start,index_end
+	#print image_list
+		
 	if len(image_list):
-		result[__ResultImg__] = ','.join(image_list.split(part_char))
+		result[__ResultImg__] = ','.join(image_list[index_start:index_end])
 		result[__ErrCode__] = 0
  	else:
 		result[__ResultImg__] = ''
 		result[__ErrCode__] = 1
 
+	result["page"] = page
+		
+	
 	return json.dumps(result)
 
 if __name__ == '__main__':
