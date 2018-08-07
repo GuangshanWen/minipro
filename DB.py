@@ -404,7 +404,7 @@ def Get_Images(UserID,Tag):
 		files = os.listdir(path)
 		result = part_char.join(files)
 		
-		print 'return all images',result
+		#print 'return all images',result
 		return result
 
 	path = root + UserID + Tag_Images

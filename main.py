@@ -93,11 +93,11 @@ def hot_collect():
 		if count * page <= files_len:
 			leng = count
 		else :
-			leng = files_len - (count)*(pages-1)
+			leng = files_len - (count)*(page-1)
 		index_end = index_start + leng
 					
-	#end new insert
-	print 'files~~~~ ',files	
+#	#end new insert
+#	print 'files~~~~ ',files	
 	result = {}
 	for f in files[index_start:index_end]:
 		#Tags = Get_Global_Tag(f)
@@ -109,14 +109,14 @@ def hot_collect():
 			result[f] = 0
 	
 	sorted_x = sorted(result.items(),key=operator.itemgetter(1))
-	print 'sorted~~~~ ',sorted_x
+	#print 'sorted~~~~ ',sorted_x
 	result = {}
 	for i in sorted_x:
 		f = i[0]
 		t = i[1]		
 			
 		Tag = Get_Global_Tag(f)
-		print 'Tag ~~~ ',Tag
+		#print 'Tag ~~~ ',Tag
 
 		if Tag == '':
 			Tag = {"NULL":"0"}
@@ -143,16 +143,16 @@ def recommended_image():
 	
 	n = page
 	#subset = random.sample(files,n)
-	print 'files:',files
+	#print 'files:',files
 	subset = Get_Fresh_Images(user_info,files,count,page)
-	print'subset:: ', subset
+	#print'subset:: ', subset
 	image_list = {}
 	for i in subset:
 		#image_list[i] = Get_Global_Tag(i)	
 		val = Get_Global_Tag(i)
 		if val != '':
 			image_list[i] = val
-	print image_list
+	#print image_list
 	result = {}
 	result[__ResultImg__] = image_list
 	#result[__ResultImg__] = ','.join(subset)
@@ -169,12 +169,12 @@ def upload_user_info():
 # 5. return user ID to client
 	#print flask.request.headers
 	user_info = flask.request.form
-	print user_info
+	#print user_info
 #	print flask.request.headers
        # print flask.request.body.nickName	
 	UserID = Generate_UserID(user_info)#2
 
-	print UserID
+	#print UserID
 	Create_User_DB(UserID)
 	Create_Image_Tags_DB(UserID)
 	Create_Tag_Images_DB(UserID)	
@@ -204,9 +204,9 @@ def tags_change():
 	NewTag = flask.request.form[__NewTag__]
 
 
-	print 'before change Tag list: ',Get_Tags(UserID,ImageID)
-	print 'before change Image list of Old Tag', Get_Images(UserID,OldTag)
-	print 'before change Image list of New Tag', Get_Images(UserID,NewTag)
+	#print 'before change Tag list: ',Get_Tags(UserID,ImageID)
+	#print 'before change Image list of Old Tag', Get_Images(UserID,OldTag)
+	#print 'before change Image list of New Tag', Get_Images(UserID,NewTag)
 	Change_Tag_In_List(UserID,ImageID,NewTag,OldTag)
 
 	
@@ -215,9 +215,9 @@ def tags_change():
 	
 	Append_Tag_Images(UserID,ImageID,NewTag)
 
-	print 'after change Tag list: ',Get_Tags(UserID,ImageID)
-	print 'after change Image list of old tag', Get_Images(UserID,OldTag)
-	print 'after change image list of new tag',Get_Images(UserID,NewTag)
+	#print 'after change Tag list: ',Get_Tags(UserID,ImageID)
+	#print 'after change Image list of old tag', Get_Images(UserID,OldTag)
+	#print 'after change image list of new tag',Get_Images(UserID,NewTag)
 
 	return Get_Tags(UserID,ImageID)
 
@@ -228,8 +228,8 @@ def tag_delete():
 
 	Tag = flask.request.form[__Tag__]
 
-	print 'before delete Tag list: ',Get_Tags(UserID,ImageID)
-	print 'before delete Image list', Get_Images(UserID,Tag)
+	#print 'before delete Tag list: ',Get_Tags(UserID,ImageID)
+	#print 'before delete Image list', Get_Images(UserID,Tag)
 
 	
 	Delete_Tag_From_List(UserID,ImageID,Tag)
@@ -237,8 +237,8 @@ def tag_delete():
 
 	Delete_Image_From_List(UserID,ImageID,Tag)
 
-	print 'after delete Tag list: ',Get_Tags(UserID,ImageID)
-	print 'after delete Image list', Get_Images(UserID,Tag)
+	#print 'after delete Tag list: ',Get_Tags(UserID,ImageID)
+	#print 'after delete Image list', Get_Images(UserID,Tag)
 
 	return Get_Tags(UserID,ImageID)
 
@@ -287,12 +287,12 @@ def append_tags():
 	ImageID = flask.request.form[__ImageID__]	
 	UserID = flask.request.form[__NickName__]
 	tag = flask.request.form[__Tag__]
-	print 'in append tag'
+	#print 'in append tag'
 	#print ('in append_tags funtion :', Get_Tags(UserID,ImageID))
 	ret = Append_Tags_List(UserID,ImageID,tag)
 	#Insert_Into_Globaldb(ImageID,tag)	
-	print Get_Images(UserID,tag)	
-	print Get_Tags(UserID,ImageID)
+	#print Get_Images(UserID,tag)	
+	#print Get_Tags(UserID,ImageID)
 	return Get_Tags(UserID,ImageID)
 
 @app.route('/search_image',methods=['POST','GET'])
@@ -339,8 +339,8 @@ def tag_search():
 #1. tag = request.get_tag()
 #2. user = request.get_user()
 #3. images_path_list = get_simi_image(tag)
-	print flask.request.form
-	print flask.request
+	#print flask.request.form
+	#print flask.request
 	userid = flask.request.form[__NickName__]
 	tag = flask.request.form[__Tag__]
 
@@ -349,7 +349,7 @@ def tag_search():
 	count = flask.request.form['count']
 	count = int(count)
 	
-	print userid,tag	
+	#print userid,tag	
 	
 	result = {}
 	image_list = Get_Images(userid,tag)
@@ -358,7 +358,7 @@ def tag_search():
 	
 	index_start = 0
 	index_end = 0
-	print 'image_list~~~~: ',image_list
+	#print 'image_list~~~~: ',image_list
 	if count * (page-1) > image_len:
 		index_start = image_len
 		index_end = image_len
@@ -369,10 +369,13 @@ def tag_search():
 		else:
 			leng = image_len - (count)*(page-1)
 		index_end = index_start + leng 
-	print'[start,end]: ',index_start,index_end
+	#print'[start,end]: ',index_start,index_end
 	#print image_list
 		
 	if len(image_list):
+		if tag!='':
+			index_start = 0
+			index_end = image_len
 		result[__ResultImg__] = ','.join(image_list[index_start:index_end])
 		result[__ErrCode__] = 0
  	else:
@@ -386,4 +389,4 @@ def tag_search():
 
 if __name__ == '__main__':
 #	app.run(host=addr,port=myport,threaded=False)
-	app.run(host=addr,port=myport,threaded=False,ssl_context=('../doutu.crt','../doutu.key'))
+	app.run(host=addr,port=myport,threaded=True,ssl_context=('../doutu.crt','../doutu.key'))
